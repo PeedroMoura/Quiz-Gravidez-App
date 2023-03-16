@@ -1,48 +1,60 @@
-import { Text, View, Image, Button, FlatList } from "react-native";
+import {
+  Text,
+  View,
+  Image,
+  Button,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
 import { styles } from "./styles";
 import { qz } from "./../../assets/quiz-logo.png";
-import { getFirestore, getDoc, doc, getDocs, collection }  from 'firebase/firestore';
+import {
+  getFirestore,
+  getDoc,
+  doc,
+  getDocs,
+  collection,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 
-
 export default function TelaPerguntas() {
-
-
-  const perguntaNumero = 1;
-  const [ pergunta, setPergunta ] = useState();
-  const [ alternativas, setAlternativas ] = useState([]);
+  const [perguntaNumero, setPerguntaNumero] = useState(1);
+  const [pergunta, setPergunta] = useState();
+  const [alternativas, setAlternativas] = useState([]);
   const db = getFirestore();
 
-  useEffect(() => {
-    (async () => {
-      console.log('AAAA')
-      try {
-        const resultado = await getDoc(doc(db, 'perguntas', perguntaNumero))
+  // ===============================================================================
+  const buscarPergunta = async () => {
+    try {
+      const resultado = await getDoc(
+        doc(db, "perguntas", perguntaNumero.toString())
+      );
 
-      } catch (e) {
-        console.log(e)
+      if (resultado.exists()) {
+        setPergunta(resultado.data());
+
+        const resultadoAlternativa = await getDocs(
+          collection(db, `perguntas/${perguntaNumero}/alternativas`)
+        );
+
+        const novasAlternativas = [];
+        if (resultadoAlternativa.docs.length > 0) {
+          const alternativasDB = resultadoAlternativa.docs[0].data();
+
+          Object.keys(alternativasDB).forEach((letra) => {
+            novasAlternativas.push({ letra, descricao: alternativasDB[letra] });
+          });
+        }
+        setAlternativas(novasAlternativas);
       }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  useEffect(() => {
+    buscarPergunta();
+  }, []);
 
-      // if (resultado.exists()) {
-      //   setPergunta(resultado.data())
-      //   const resultadoAlternativa = await getDocs(collection(db, `perguntas/${perguntaNumero}/alternativas`))
-        
-      //   if (resultadoAlternativa.exists()) {
-      //     const alternativas = []
-      //     const alternativasDB = resultadoAlternativa[0].data();
-      //     Object.keys(alternativasDB).forEach(letra => {
-      //       alternativas.push([{letra, descricao: alternativasDB[letra]}])
-      //     })
-
-      //   }
-      //   setAlternativas(alternativas)
-      // }
-
-    })()
-
-  }, [])
-
-  
   return (
     <View style={styles.viewPrincipal}>
       <Image
@@ -51,7 +63,9 @@ export default function TelaPerguntas() {
       ></Image>
 
       <View style={styles.viewPergunta}>
-        <Text style={{ color: "white", fontSize: 14 }}>Questão {perguntaNumero}</Text>
+        <Text style={{ color: "white", fontSize: 14 }}>
+          Questão {perguntaNumero}
+        </Text>
         <Text
           style={{
             color: "white",
@@ -61,27 +75,27 @@ export default function TelaPerguntas() {
             paddingHorizontal: 5,
           }}
         >
-          { pergunta && pergunta.titulo}
-          {/* Você foi a consulta com o dentista durante o periodo de gravidez? */}
+          {pergunta && pergunta.titulo}
         </Text>
       </View>
 
       <View style={{ justifyContent: "space-between" }}>
         <FlatList
           data={alternativas}
-          renderItem={({item}) => (
-            <View style={styles.viewAlternativa}>
-              <Text style={styles.viewAlternativaText}>{item.descricao}</Text>
-            </View>
+          keyExtractor={(item) => item.letra}
+          renderItem={({ item }) => (
+            <TouchableOpacity>
+              <View style={styles.viewAlternativa}>
+                <Text style={styles.viewAlternativaText}>{item.descricao}</Text>
+              </View>
+            </TouchableOpacity>
           )}
         />
-      
       </View>
 
-          {/* <View style={styles.buttonContent}>
-          <Button title="Voltar"color={"#A193BE"} ></Button>
-          </View> */}
-
+      {/* <View style={styles.buttonContent}>
+        <Button title="Voltar" color={"#A193BE"}></Button>
+      </View> */}
     </View>
   );
 }

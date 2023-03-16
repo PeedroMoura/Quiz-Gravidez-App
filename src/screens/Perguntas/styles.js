@@ -17,8 +17,9 @@ export const styles = StyleSheet.create({
     borderRadius:12,
     alignItems:'center',
     justifyContent:'center',
-    shadowColor:'#F59696',
     marginBottom:30,
+    borderColor:'#F59696',
+    borderWidth:4
   },
 
   viewAlternativa:{
@@ -30,6 +31,8 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection:"row",
     marginBottom:15,
+    borderColor:'#F59696',
+    borderWidth:2
   },
 
   viewAlternativaText:{
