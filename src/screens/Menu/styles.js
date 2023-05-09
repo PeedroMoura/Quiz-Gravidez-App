@@ -16,7 +16,7 @@ export const styles = StyleSheet.create({
     },
 
     viewHeaderContainer: {
-        flexDirection:'row',
+        alignItems:'center',
         marginTop:30,
     },
 

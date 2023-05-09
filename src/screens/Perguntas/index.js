@@ -5,6 +5,7 @@ import {
   Button,
   FlatList,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
 import { styles } from "./styles";
 import { qz } from "./../../assets/quiz-logo.png";
@@ -16,15 +17,17 @@ import {
   collection,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import TelaResposta from "./resposta";
 
 export default function TelaPerguntas() {
   const [perguntaNumero, setPerguntaNumero] = useState(1);
+  const [ telaResposta, setTelaResposta ] = useState(false);
   const [pergunta, setPergunta] = useState();
   const [alternativas, setAlternativas] = useState([]);
   const db = getFirestore();
 
   // ===============================================================================
-  const buscarPergunta = async () => {
+  const buscarPergunta = async (perguntaNumero) => {
     try {
       const resultado = await getDoc(
         doc(db, "perguntas", perguntaNumero.toString())
@@ -51,12 +54,26 @@ export default function TelaPerguntas() {
       console.log(e);
     }
   };
+
+  const selecionarAlternativa = (letra) => {
+    setTelaResposta(true);
+  }
+
+  const avancar = () => {
+    console.log('aaaaaaaaaaaaaaaaaaaaaa')
+    buscarPergunta(perguntaNumero+1)
+    setTelaResposta(false)
+    setPerguntaNumero(perguntaNumero+1)
+  }
+
+
   useEffect(() => {
-    buscarPergunta();
+    buscarPergunta(perguntaNumero);
   }, []);
 
   return (
-    <View style={styles.viewPrincipal}>
+    <>
+    {  !telaResposta && (<View style={styles.viewPrincipal}>
       <Image
         source={require("./../../assets/quiz-logo.png")}
         style={{ width: "80%", height: 100, resizeMode: "contain" }}
@@ -84,7 +101,7 @@ export default function TelaPerguntas() {
           data={alternativas}
           keyExtractor={(item) => item.letra}
           renderItem={({ item }) => (
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => selecionarAlternativa(item.letra)}>
               <View style={styles.viewAlternativa}>
                 <Text style={styles.viewAlternativaText}>{item.descricao}</Text>
               </View>
@@ -92,10 +109,12 @@ export default function TelaPerguntas() {
           )}
         />
       </View>
-
       {/* <View style={styles.buttonContent}>
         <Button title="Voltar" color={"#A193BE"}></Button>
       </View> */}
-    </View>
+    </View>)}
+    { (pergunta && telaResposta) && <TelaResposta correta={pergunta.correta} avancar={avancar} />}
+    
+    </>
   );
 }

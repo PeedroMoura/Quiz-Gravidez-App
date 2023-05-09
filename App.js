@@ -5,7 +5,9 @@ import { initializeApp } from "@firebase/app";
 import firebaseConfig from './src/config/firebase';
 import { doc, getDoc, getFirestore } from "@firebase/firestore";
 import { useEffect } from 'react';
+import { NavegacaoPrinciapl } from './src/navigations';
 import TelaPerguntas from './src/screens/Perguntas';
+import TelaResposta from './src/screens/Perguntas/resposta';
 
 
 export default function App() {
@@ -24,8 +26,10 @@ export default function App() {
 
   return (
     <View style={{flex:1}}>
+      <NavegacaoPrinciapl/>
       {/* <TelaMenu/> */}
-      <TelaPerguntas/>
+      {/* <TelaPerguntas/> */}
+      {/* <TelaResposta/> */}
     </View>
   )
 }

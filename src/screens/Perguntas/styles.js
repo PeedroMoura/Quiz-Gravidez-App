@@ -24,7 +24,7 @@ export const styles = StyleSheet.create({
 
   viewAlternativa:{
     height:44,
-    width:300,
+    width:"100%",
     borderRadius:12,
     backgroundColor:'#FF858C',
     alignItems:'center',
