@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
     backgroundcontainer: {
         backgroundColor: 'white',
-        flex: 1
+        flex: 1,
     },
 
     viewCircleContainer: {

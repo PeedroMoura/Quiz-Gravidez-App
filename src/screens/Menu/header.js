@@ -13,13 +13,13 @@ export function Header() {
     const nav = useNavigation();
 
   return (
-    <ImageBackground source={bg} style={{ width: "100%", height: 300,  flex:1 }}>
+    <ImageBackground source={bg} style={{ width: "100%", height: 300,  flex:1}}>
       <View style={styles.viewHeaderContainer}>
       <Image source={qz} style={{ width: "100%", height:150, resizeMode: "contain", marginTop: 50}}></Image>
       </View>
 
       <View style={{alignItems:'center', marginTop:70}}>
-      <Text style={{ color: "black", fontSize: 40, marginTop:10 }}>Bem vinda!</Text>
+      <Text style={{ color: "black", fontSize: 40, marginTop:10 }}>Bem-vinda!</Text>
         <Text style={{ color: "black", fontSize: 18, textAlign:'center', marginTop:30 }}>Vamos conversar um pouco sobre o pré-natal odontológico?</Text>
         <Text style={{ color: "black", fontSize: 18, textAlign:'center', marginLeft:15, marginRight:15, marginTop:30   }}>Venha esclarecer suas dúvidas e aprender a cuidar da sua saúde bucal e do seu bebê.</Text>
       </View>

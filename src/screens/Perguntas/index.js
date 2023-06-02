@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 import { styles } from "./styles";
-import { qz } from "./../../assets/quiz-logo.png";
+import { qz } from "./../../assets/quiz-logo1.png";
 import {
   getFirestore,
   getDoc,
@@ -18,37 +18,58 @@ import {
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import TelaResposta from "./resposta";
+import { useNavigation } from '@react-navigation/native'
 
 export default function TelaPerguntas() {
-  const [perguntaNumero, setPerguntaNumero] = useState(1);
+  const navigation = useNavigation();
+  const [perguntaNumero, setPerguntaNumero] = useState(0);
   const [ telaResposta, setTelaResposta ] = useState(false);
   const [pergunta, setPergunta] = useState();
+  const [perguntas, setPerguntas] = useState([]);
   const [alternativas, setAlternativas] = useState([]);
   const db = getFirestore();
 
+
   // ===============================================================================
+  const buscarPerguntas = async () => {
+    await getDocs(collection(db, 'perguntas'))
+    .then(async snapshots => {
+      
+        let dados = []  
+          for(let i = 0; i < snapshots.docs.length; i++) {
+
+            const doc = snapshots.docs[i];
+          
+            const resultadoAlternativa = await getDocs(
+              collection(db, `perguntas/${doc.id}/alternativas`)
+            );
+
+            const alternativas = [];
+            if (resultadoAlternativa.docs.length > 0) {
+              const alternativasDB = resultadoAlternativa.docs[0].data();
+    
+              Object.keys(alternativasDB).forEach((letra) => {
+                alternativas.push({ letra, descricao: alternativasDB[letra] });
+              });
+            }
+            const data = doc.data()
+            dados.push({...data, alternativas})
+          }
+          setPerguntas(dados);
+        })
+  }
+  
+
   const buscarPergunta = async (perguntaNumero) => {
     try {
-      const resultado = await getDoc(
-        doc(db, "perguntas", perguntaNumero.toString())
-      );
 
-      if (resultado.exists()) {
-        setPergunta(resultado.data());
-
-        const resultadoAlternativa = await getDocs(
-          collection(db, `perguntas/${perguntaNumero}/alternativas`)
-        );
-
-        const novasAlternativas = [];
-        if (resultadoAlternativa.docs.length > 0) {
-          const alternativasDB = resultadoAlternativa.docs[0].data();
-
-          Object.keys(alternativasDB).forEach((letra) => {
-            novasAlternativas.push({ letra, descricao: alternativasDB[letra] });
-          });
-        }
-        setAlternativas(novasAlternativas);
+      console.log(perguntaNumero);
+      console.log(perguntas);
+      if (perguntas[perguntaNumero]) {
+        setPergunta(perguntas[perguntaNumero]);
+        setAlternativas(perguntas[perguntaNumero].alternativas);
+      } else {
+        navigation.navigate('telaPrincipal');
       }
     } catch (e) {
       console.log(e);
@@ -68,20 +89,27 @@ export default function TelaPerguntas() {
 
 
   useEffect(() => {
-    buscarPergunta(perguntaNumero);
+    (async () => {
+      await buscarPerguntas();
+    })()
   }, []);
+
+  useEffect(() => {
+    if (perguntas.length > 0)
+     buscarPergunta(perguntaNumero);
+  }, [perguntas])
 
   return (
     <>
     {  !telaResposta && (<View style={styles.viewPrincipal}>
-      <Image
+      {/* <Image
         source={require("./../../assets/quiz-logo.png")}
         style={{ width: "80%", height: 100, resizeMode: "contain" }}
-      ></Image>
+      ></Image> */}
 
-      <View style={styles.viewPergunta}>
+      <View style={styles.viewPergunta}>  
         <Text style={{ color: "white", fontSize: 14 }}>
-          Questão {perguntaNumero}
+          Questão {perguntaNumero+1}
         </Text>
         <Text
           style={{
