@@ -129,11 +129,13 @@ export default function TelaPerguntas() {
           data={alternativas}
           keyExtractor={(item) => item.letra}
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => selecionarAlternativa(item.letra)}>
-              <View style={styles.viewAlternativa}>
-                <Text style={styles.viewAlternativaText}>{item.descricao}</Text>
-              </View>
-            </TouchableOpacity>
+            <>
+             {item.descricao && <TouchableOpacity onPress={() => selecionarAlternativa(item.letra)}>
+                <View style={styles.viewAlternativa}>
+                  <Text style={styles.viewAlternativaText}>{item.descricao}</Text>
+                </View>
+              </TouchableOpacity>}
+            </>
           )}
         />
       </View>

@@ -3,6 +3,7 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   viewPrincipal: {
     flex: 1,
+    height: '100%',
     backgroundColor: "#e454bc",
     justifyContent: "flex-start",
     alignItems: "center",
